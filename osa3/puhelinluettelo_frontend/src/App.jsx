@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 import Notification from './components/Notification'
+import ErrorNotification from './components/ErrorNotification'
 
 const Persons = (props) => {
   //personsToShow arvo val1, jos ehto (newFilter) pätee, muuten val2
@@ -45,6 +46,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
   const [infoMessage, setMessage] = useState(null)
+  const [errorMessage, setError] = useState(null)
 
   useEffect(() => {
     personService
@@ -78,6 +80,16 @@ const App = () => {
             setTimeout(() => {
               setMessage(null)
             }, 5000)
+          })
+          .catch(error => {
+            //console.log(error)
+            setError(`${error.response.data.error}`)
+            console.log(error.response.data.error)
+            setTimeout(() => {
+              setError(null)
+            }, 5000)
+            setNewName('')
+            setNewNumber('')
           })
       }
   } 
@@ -116,6 +128,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Notification message={infoMessage} />
+      <ErrorNotification message={errorMessage} />
       <Filter handleFilter={handleFilter} />
       <h2>add a new</h2>
       <Personform addPerson={addPerson} newName={newName} newNumber={newNumber} handleName={handleName} handleNumber={handleNumber}/>
@@ -123,7 +136,6 @@ const App = () => {
       <Persons persons={persons} newFilter={newFilter} delPerson={delPerson}/>
     </div>
   )
-
 }
 
 export default App
